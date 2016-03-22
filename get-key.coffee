@@ -9,6 +9,7 @@ getEnvironmentVariable = (text) ->
   new Buffer(text).toString 'base64'
 
 getKeyRecord = (key, newEnv) ->
+  return {} unless key?
   key: key
   hash: easyHash key
   environment: getEnvironmentVariable key
@@ -22,12 +23,13 @@ key              = new NodeRSA rsaKey
 publicKey        = key.exportKey 'public'
 publicKeyNewEnv  = key.exportKey('public-der').toString 'base64'
 
+privateKey = null
+privateKeyNewEnv = null
+
 try
   privateKey = key.exportKey()
   privateKeyNewEnv = key.exportKey('private-der').toString 'base64'
-catch Error
-  privateKey = ''
-  privateKeyNewEnv = ''
+catch error
 
 info =
   input: getKeyRecord inputKey
