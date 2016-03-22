@@ -3,7 +3,7 @@ crypto = require 'crypto'
 
 
 easyHash = (text) ->
-  crypto.createHash('md5').update(text).digest().toString('hex')
+  crypto.createHash('md5').update(text).digest().toString('base64')
 
 getEnvironmentVariable = (text) ->
   new Buffer(text).toString 'base64'
