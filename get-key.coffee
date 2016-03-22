@@ -1,15 +1,37 @@
 NodeRSA = require 'node-rsa'
+crypto = require 'crypto'
 
-base64Key = process.argv[2]
-console.log base64Key
 
-rsaKey = new Buffer(base64Key, 'base64')
-privKey = rsaKey.toString()
-console.log privKey
+easyHash = (text) ->
+  crypto.createHash('md5').update(text).digest().toString('hex')
 
-key = new NodeRSA rsaKey
-pubKey = key.exportKey 'public'
-console.log pubKey
+getEnvironmentVariable = (text) ->
+  new Buffer(text).toString 'base64'
 
-console.log "pubKey base64"
-console.log new Buffer(pubKey).toString 'base64'
+getKeyRecord = (key, newEnv) ->
+  key: key
+  hash: easyHash key
+  environment: getEnvironmentVariable key
+  newEnvironment: newEnv
+
+base64Key        = process.argv[2]
+
+rsaKey           = new Buffer(base64Key, 'base64')
+inputKey         = rsaKey.toString()
+key              = new NodeRSA rsaKey
+publicKey        = key.exportKey 'public'
+publicKeyNewEnv  = key.exportKey('public-der').toString 'base64'
+privateKeyNewEnv = key.exportKey('private-der').toString 'base64'
+
+try
+  privateKey = key.exportKey()
+catch Error
+  privateKey = ''
+
+info =
+  input: getKeyRecord inputKey
+  public: getKeyRecord publicKey, publicKeyNewEnv
+  private: getKeyRecord privateKey, privateKeyNewEnv
+
+
+console.log JSON.stringify info, null, 2
