@@ -21,12 +21,13 @@ inputKey         = rsaKey.toString()
 key              = new NodeRSA rsaKey
 publicKey        = key.exportKey 'public'
 publicKeyNewEnv  = key.exportKey('public-der').toString 'base64'
-privateKeyNewEnv = key.exportKey('private-der').toString 'base64'
 
 try
   privateKey = key.exportKey()
+  privateKeyNewEnv = key.exportKey('private-der').toString 'base64'
 catch Error
   privateKey = ''
+  privateKeyNewEnv = ''
 
 info =
   input: getKeyRecord inputKey
